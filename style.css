@@ -1,9 +1,15 @@
+body {
+    margin: 0;
+    background-color: #f0f0f0; /* 设置页面背景色 */
+}
+
 .game-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    text-align: center;
+    max-width: 300px; /* 与canvas宽度匹配 */
+    margin: 10px auto; /* 垂直间距 */
+    padding: 10px; /* 内边距 */
+    background-color: white; /* 容器背景色 */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* 阴影效果 */
 }
 
 .game-info {
@@ -26,9 +32,14 @@
 }
 
 .game-area {
-    margin: 0 auto;
+    width: 100%; /* 填满容器宽度 */
     background-color: #000;
-    border: 2px solid #333;
+    border: 2px solid #333; /* 恢复边框 */
+    box-sizing: border-box; /* 边框包含在宽度内 */
+}
+
+canvas {
+    display: block; /* 移除canvas底部间隙 */
 }
 
 .controls {

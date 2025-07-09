@@ -15,6 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const ROWS = 20;
     const NEXT_BLOCK_SIZE = 20;
 
+    // 设置画布尺寸
+    gameCanvas.width = COLS * BLOCK_SIZE;
+    gameCanvas.height = ROWS * BLOCK_SIZE; // 恢复标准高度
+    nextCanvas.width = 4 * NEXT_BLOCK_SIZE;
+    nextCanvas.height = 4 * NEXT_BLOCK_SIZE;
+
     // 游戏状态
     let score = 0;
     let lines = 0;
@@ -72,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.fillRect(
                         (piece.x + x) * blockSize,
                         (piece.y + y) * blockSize,
-                        blockSize - 1, // -1 为了显示网格线
-                        blockSize - 1
+                        blockSize,
+                        blockSize
                     );
                 }
             });
@@ -90,8 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.fillRect(
                         x * BLOCK_SIZE,
                         y * BLOCK_SIZE,
-                        BLOCK_SIZE - 1,
-                        BLOCK_SIZE - 1
+                        BLOCK_SIZE,
+                        BLOCK_SIZE
                     );
                 }
             });
@@ -119,11 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (value) {
                     const newX = piece.x + x + dx;
                     const newY = piece.y + y + dy;
-                    return (
-                        newX < 0 || // 左边界
-                        newX >= COLS || // 右边界
-                        newY >= ROWS || // 下边界
-                        (newY >= 0 && board[newY][newX]) // 已有方块
+                    return (newX < 0 || newX >= COLS || newY >= ROWS || (newY >= 0 && board[newY][newX]) // 已有方块
                     );
                 }
                 return false;
@@ -155,22 +157,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 合并方块到游戏板
     function mergePiece() {
-        currentPiece.shape.forEach((row, y) => {
-            row.forEach((value, x) => {
-                if (value) {
+        for (let y = 0; y < currentPiece.shape.length; y++) {
+            const row = currentPiece.shape[y];
+            for (let x = 0; x < row.length; x++) {
+                if (row[x]) {
                     const newY = currentPiece.y + y;
                     const newX = currentPiece.x + x;
                     if (newY < 0) {
-                        // 游戏结束
+                        // 顶部越界，游戏结束
                         gameOver = true;
                         clearInterval(gameLoop);
                         alert('游戏结束！得分: ' + score);
                         return;
                     }
+                    if (newY >= ROWS) {
+                        // 底部越界，调整到最底行
+                        newY = ROWS - 1;
+                    }
+                    board[newY][newX] = currentPiece.color;
                     board[newY][newX] = currentPiece.color;
                 }
-            });
-        });
+            }
+        }
 
         // 检查并清除完整行
         clearLines();
@@ -313,6 +321,9 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseBtn.textContent = '暂停';
     });
 
+    // 设置画布尺寸以匹配实际绘制大小（包含网格线间隙）
+    gameCanvas.width = COLS * (BLOCK_SIZE - 1);
+    gameCanvas.height = ROWS * (BLOCK_SIZE - 1);
     // 初始化游戏
     initGame();
 });
